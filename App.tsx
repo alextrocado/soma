@@ -109,8 +109,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-2 bg-yellow-50 overflow-hidden">
       <header className="mb-2 text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-orange-600">Treino de Algoritmo</h1>
-        <p className="text-gray-600 text-sm md:text-base">Troca a ordem se quiseres!</p>
+        <h1 className="text-3xl md:text-4xl font-bold text-orange-600">SOMA</h1>
       </header>
 
       {/* Target Problem Display */}
