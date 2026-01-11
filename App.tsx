@@ -15,13 +15,11 @@ const App: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState(false);
 
   const generateNewProblem = useCallback(() => {
-    // Garantir que a soma resulte em transporte em ~50% das vezes para treino
     let n1, n2;
     const forceCarry = Math.random() > 0.5;
     
     if (forceCarry) {
-      n1 = Math.floor(Math.random() * 40) + 15; // 15-54
-      // Garantir que as unidades somem > 9
+      n1 = Math.floor(Math.random() * 40) + 15;
       const u1 = n1 % 10;
       const u2 = Math.floor(Math.random() * (9 - (10 - u1) + 1)) + (10 - u1);
       n2 = (Math.floor(Math.random() * 3) + 1) * 10 + u2;
@@ -60,30 +58,25 @@ const App: React.FC = () => {
     const u1Val = userInput.row1D + userInput.row1U;
     const u2Val = userInput.row2D + userInput.row2U;
 
-    // Verificação de comutatividade: as parcelas podem estar em qualquer ordem
     const isMatchDirect = (u1Val === p1String && u2Val === p2String);
     const isMatchSwapped = (u1Val === p2String && u2Val === p1String);
     const numbersAreCorrect = isMatchDirect || isMatchSwapped;
 
     if (!numbersAreCorrect) {
-      // Se a primeira linha não é nem p1 nem p2
       if (u1Val !== p1String && u1Val !== p2String) {
         fieldErrors.row1D = true;
         fieldErrors.row1U = true;
       }
-      // Se a segunda linha não é nem p1 nem p2
       if (u2Val !== p1String && u2Val !== p2String) {
         fieldErrors.row2D = true;
         fieldErrors.row2U = true;
       }
-      // Caso especial: se inseriu o mesmo número nas duas linhas e eles não são iguais no problema
       if (u1Val === u2Val && (u1Val === p1String || u1Val === p2String) && p1String !== p2String) {
         fieldErrors.row2D = true;
         fieldErrors.row2U = true;
       }
     }
 
-    // O transporte e o resultado são sempre os mesmos independentemente da ordem
     const uDigit1 = problem.num1 % 10;
     const uDigit2 = problem.num2 % 10;
     const correctCarry = (uDigit1 + uDigit2 > 9) ? "1" : "";
@@ -99,13 +92,13 @@ const App: React.FC = () => {
     
     if (hasErrors) {
       if (fieldErrors.row1D || fieldErrors.row1U || fieldErrors.row2D || fieldErrors.row2U) {
-        errors.push("Verifica se escreveste as duas parcelas corretamente.");
+        errors.push("Verifica as parcelas.");
       }
       if (fieldErrors.carry) {
-        errors.push("O transporte (quadradinho vermelho) não está correto.");
+        errors.push("Erro no transporte.");
       }
       if (fieldErrors.resultD || fieldErrors.resultU) {
-        errors.push("O resultado da soma não está correto.");
+        errors.push("Erro no resultado.");
       }
     }
 
@@ -114,33 +107,32 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-yellow-50">
-      <header className="mb-6 text-center">
-        <h1 className="text-4xl font-bold text-orange-600 mb-2">Treino de Algoritmo</h1>
-        <p className="text-gray-600 text-lg">Podes colocar os números em qualquer ordem!</p>
+    <div className="min-h-screen flex flex-col items-center justify-center p-2 bg-yellow-50 overflow-hidden">
+      <header className="mb-2 text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-orange-600">Treino de Algoritmo</h1>
+        <p className="text-gray-600 text-sm md:text-base">Troca a ordem se quiseres!</p>
       </header>
 
       {/* Target Problem Display */}
-      <div className="bg-black text-white rounded-xl px-10 py-4 mb-8 shadow-xl">
-        <span className="text-4xl font-bold tracking-widest">
+      <div className="bg-black text-white rounded-lg px-6 py-2 mb-4 shadow-md">
+        <span className="text-2xl md:text-3xl font-bold tracking-widest">
           {problem.num1} + {problem.num2} = ?
         </span>
       </div>
 
       {/* Addition Grid Algorithm */}
-      <div className="bg-white p-8 rounded-3xl shadow-2xl border-4 border-orange-100 select-none">
-        <div className="flex space-x-6">
+      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-xl border-2 border-orange-100 select-none">
+        <div className="flex space-x-3 md:space-x-6">
           {/* Sign column */}
-          <div className="flex flex-col justify-center pt-20">
-            <span className="text-4xl font-bold text-gray-400">+</span>
+          <div className="flex flex-col justify-center pt-14 md:pt-16">
+            <span className="text-3xl font-bold text-gray-400">+</span>
           </div>
 
           {/* Tens Column (Dezenas) */}
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-full bg-yellow-400 text-white font-bold py-1 rounded-t-lg text-center text-xl">D</div>
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-full bg-yellow-400 text-white font-bold py-0.5 rounded-t-lg text-center text-lg">D</div>
             
-            {/* Carry Box - Small and to the Right above Tens */}
-            <div className="w-full flex justify-end pr-1">
+            <div className="w-full flex justify-end pr-1 h-6 md:h-8">
               <GridInput 
                 variant="carry" 
                 value={userInput.carry} 
@@ -152,22 +144,21 @@ const App: React.FC = () => {
             <GridInput value={userInput.row1D} onChange={(v) => updateInput('row1D', v)} isError={validation?.fieldErrors.row1D} />
             <GridInput value={userInput.row2D} onChange={(v) => updateInput('row2D', v)} isError={validation?.fieldErrors.row2D} />
             
-            <div className="w-full border-t-4 border-gray-800 my-1"></div>
+            <div className="w-full border-t-4 border-gray-800 my-0.5"></div>
             
             <GridInput variant="result" value={userInput.resultD} onChange={(v) => updateInput('resultD', v)} isError={validation?.fieldErrors.resultD} />
           </div>
 
           {/* Units Column (Unidades) */}
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-full bg-green-500 text-white font-bold py-1 rounded-t-lg text-center text-xl">U</div>
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-full bg-green-500 text-white font-bold py-0.5 rounded-t-lg text-center text-lg">U</div>
             
-            {/* Spacer for carry alignment */}
             <div className="h-6 md:h-8"></div>
 
             <GridInput value={userInput.row1U} onChange={(v) => updateInput('row1U', v)} isError={validation?.fieldErrors.row1U} />
             <GridInput value={userInput.row2U} onChange={(v) => updateInput('row2U', v)} isError={validation?.fieldErrors.row2U} />
             
-            <div className="w-full border-t-4 border-gray-800 my-1"></div>
+            <div className="w-full border-t-4 border-gray-800 my-0.5"></div>
             
             <GridInput variant="result" value={userInput.resultU} onChange={(v) => updateInput('resultU', v)} isError={validation?.fieldErrors.resultU} />
           </div>
@@ -175,33 +166,33 @@ const App: React.FC = () => {
       </div>
 
       {/* Controls */}
-      <div className="mt-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+      <div className="mt-4 flex space-x-3">
         <button 
           onClick={validate}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-12 rounded-2xl shadow-lg transition-transform active:scale-95 text-xl"
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-xl shadow transition-transform active:scale-95 text-lg"
         >
-          Verificar Resposta
+          Verificar
         </button>
         <button 
           onClick={generateNewProblem}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-12 rounded-2xl shadow-lg transition-transform active:scale-95 text-xl"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-xl shadow transition-transform active:scale-95 text-lg"
         >
-          Próxima Conta
+          Próxima
         </button>
       </div>
 
       {/* Feedback Area */}
       {showFeedback && validation && (
-        <div className={`mt-6 max-w-sm w-full p-5 rounded-2xl border-4 animate-pop-in ${validation.isValid ? 'bg-green-100 border-green-400 text-green-900' : 'bg-red-100 border-red-400 text-red-900'}`}>
+        <div className={`mt-3 max-w-sm w-full p-3 rounded-xl border-2 animate-pop-in ${validation.isValid ? 'bg-green-100 border-green-400 text-green-900' : 'bg-red-100 border-red-400 text-red-900'}`}>
           {validation.isValid ? (
             <div className="text-center">
-              <span className="text-5xl block mb-2">🌟</span>
-              <p className="text-2xl font-bold">Excelente trabalho!</p>
+              <span className="text-3xl block mb-1">🌟</span>
+              <p className="text-lg font-bold">Trabalho fantástico!</p>
             </div>
           ) : (
             <div>
-              <span className="text-xl font-bold block mb-2">Quase lá! Vamos corrigir:</span>
-              <ul className="list-disc pl-5 space-y-1">
+              <span className="text-base font-bold block mb-1">Quase lá! Corrige:</span>
+              <ul className="list-disc pl-5 text-sm">
                 {validation.errors.map((err, i) => (
                   <li key={i} className="font-medium">{err}</li>
                 ))}
